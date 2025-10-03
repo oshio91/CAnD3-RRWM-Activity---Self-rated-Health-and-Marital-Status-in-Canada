@@ -1,0 +1,746 @@
+-----------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\oshio\Documents\CAnD3 RRWM 1\Stata Works\RRWM-1-LogFile-Goodnews_Oshiogbele.log
+  log type:  text
+ opened on:   2 Oct 2025, 22:47:03
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. /*load the dataset; "use" command won't work since this is not a .dta file.*/
+. import delimited "gss-12M0025-E-2017-c-31_F1.csv"
+(1,316 vars, 20,602 obs)
+
+. 
+. ****** DATA CLEANING AND SAMPLING *****
+. ***************************************
+. 
+. *** Keep only these 7 variables of interest to make the dataset more manageable
+. keep srh_110 marstat agec sex lmam_01 ehg3_01b ttlincg2
+
+. 
+. *** Drop individuals outside the working age (that is, outside 15-64; since the gss surveys 15 year olds 
+> and above, focus on dropping those > 63 years )
+. drop if agec > 64
+(5,884 observations deleted)
+
+. 
+. *****Clean the dependent variable *****
+. ***************************************
+. *** Examined the DV and drop observations with unusable values.
+. tab srh_110, mis
+
+    SRH_110 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      3,512       23.86       23.86
+          2 |      5,269       35.80       59.66
+          3 |      4,228       28.73       88.39
+          4 |      1,150        7.81       96.20
+          5 |        457        3.11       99.31
+          7 |         32        0.22       99.52
+          8 |         26        0.18       99.70
+          9 |         44        0.30      100.00
+------------+-----------------------------------
+      Total |     14,718      100.00
+
+. drop if srh_110 == 7 | srh_110 == 8 | srh_110 == 9
+(102 observations deleted)
+
+. tab srh_110, mis
+
+    SRH_110 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      3,512       24.03       24.03
+          2 |      5,269       36.05       60.08
+          3 |      4,228       28.93       89.01
+          4 |      1,150        7.87       96.87
+          5 |        457        3.13      100.00
+------------+-----------------------------------
+      Total |     14,616      100.00
+
+. 
+. * Recode the DV and generated a new variable named "Self-rated health cleaned"
+. recode srh_110 (1 = 1 "Excellent") ///
+>           (2 = 2 "Very good") ///
+>           (3 = 3 "Good") ///
+>           (4 5 = 4 "Not Good"), gen(srh2_110)
+(457 differences between srh_110 and srh2_110)
+
+. label variable srh2_110 "Self-rated health cleaned"
+
+. tab srh2_110
+
+ Self-rated |
+     health |
+    cleaned |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Excellent |      3,512       24.03       24.03
+  Very good |      5,269       36.05       60.08
+       Good |      4,228       28.93       89.01
+   Not Good |      1,607       10.99      100.00
+------------+-----------------------------------
+      Total |     14,616      100.00
+
+. tab srh2_110, nol
+
+ Self-rated |
+     health |
+    cleaned |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      3,512       24.03       24.03
+          2 |      5,269       36.05       60.08
+          3 |      4,228       28.93       89.01
+          4 |      1,607       10.99      100.00
+------------+-----------------------------------
+      Total |     14,616      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. *****Clean the independent variables *****
+. ******************************************
+. * Marital status 
+. tab marstat, mis
+
+    MARSTAT |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      6,672       45.65       45.65
+          2 |      1,852       12.67       58.32
+          3 |        309        2.11       60.43
+          4 |        479        3.28       63.71
+          5 |      1,035        7.08       70.79
+          6 |      4,267       29.19       99.99
+         97 |          1        0.01       99.99
+         98 |          1        0.01      100.00
+------------+-----------------------------------
+      Total |     14,616      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. drop if marstat == 97 | marstat == 98
+(2 observations deleted)
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab marstat
+
+    MARSTAT |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      6,672       45.65       45.65
+          2 |      1,852       12.67       58.33
+          3 |        309        2.11       60.44
+          4 |        479        3.28       63.72
+          5 |      1,035        7.08       70.80
+          6 |      4,267       29.20      100.00
+------------+-----------------------------------
+      Total |     14,614      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. recode marstat (1 2 = 1 "Partnered") ///
+>           (6 = 2 "Single, never married") ///
+>           (3 4 5 = 3 "Other"), gen(marstat2)
+(7633 differences between marstat and marstat2)
+
+. label variable marstat2 "Marital status cleaned"
+
+. tab marstat2
+
+       Marital status |
+              cleaned |      Freq.     Percent        Cum.
+----------------------+-----------------------------------
+            Partnered |      8,524       58.33       58.33
+Single, never married |      4,267       29.20       87.53
+                Other |      1,823       12.47      100.00
+----------------------+-----------------------------------
+                Total |     14,614      100.00
+
+. tab marstat2, nol
+
+    Marital |
+     status |
+    cleaned |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      8,524       58.33       58.33
+          2 |      4,267       29.20       87.53
+          3 |      1,823       12.47      100.00
+------------+-----------------------------------
+      Total |     14,614      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. * Age 
+. tab agec, mis
+
+       AGEC |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         15 |        121        0.83        0.83
+         16 |        156        1.07        1.90
+         17 |        150        1.03        2.92
+         18 |        129        0.88        3.80
+         19 |        143        0.98        4.78
+         20 |        136        0.93        5.71
+         21 |        145        0.99        6.71
+         22 |        189        1.29        8.00
+         23 |        168        1.15        9.15
+         24 |        195        1.33       10.48
+         25 |        205        1.40       11.89
+         26 |        226        1.55       13.43
+         27 |        243        1.66       15.10
+         28 |        240        1.64       16.74
+         29 |        281        1.92       18.66
+         30 |        348        2.38       21.04
+         31 |        303        2.07       23.11
+         32 |        328        2.24       25.36
+         33 |        292        2.00       27.36
+         34 |        320        2.19       29.55
+         35 |        336        2.30       31.85
+         36 |        346        2.37       34.21
+         37 |        331        2.26       36.48
+         38 |        320        2.19       38.67
+         39 |        317        2.17       40.84
+         40 |        322        2.20       43.04
+         41 |        302        2.07       45.11
+         42 |        305        2.09       47.19
+         43 |        301        2.06       49.25
+         44 |        295        2.02       51.27
+         45 |        277        1.90       53.17
+         46 |        301        2.06       55.23
+         47 |        252        1.72       56.95
+         48 |        291        1.99       58.94
+         49 |        254        1.74       60.68
+         50 |        284        1.94       62.62
+         51 |        282        1.93       64.55
+         52 |        360        2.46       67.02
+         53 |        359        2.46       69.47
+         54 |        378        2.59       72.06
+         55 |        409        2.80       74.86
+         56 |        395        2.70       77.56
+         57 |        406        2.78       80.34
+         58 |        424        2.90       83.24
+         59 |        404        2.76       86.01
+         60 |        432        2.96       88.96
+         61 |        397        2.72       91.68
+         62 |        395        2.70       94.38
+         63 |        423        2.89       97.28
+         64 |        398        2.72      100.00
+------------+-----------------------------------
+      Total |     14,614      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. * Recoded the age into age groups:
+. recode agec (15/24 = 1 "15-24 (Youth)") ///
+>                         (25/34 = 2 "25-34 (Young adults)") ///
+>                         (35/44 = 3 "35-44 (Middle-aged adults") ///
+>                         (45/54 = 4 "45-54 (Senior adults") ///
+>                         (55/64 = 5 "55-64 (Pre-retirement adults"), gen(agegrp)
+(14614 differences between agec and agegrp)
+
+. label variable agegrp "Age group"
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab agegrp
+
+                   Age group |      Freq.     Percent        Cum.
+-----------------------------+-----------------------------------
+               15-24 (Youth) |      1,532       10.48       10.48
+        25-34 (Young adults) |      2,786       19.06       29.55
+   35-44 (Middle-aged adults |      3,175       21.73       51.27
+        45-54 (Senior adults |      3,038       20.79       72.06
+55-64 (Pre-retirement adults |      4,083       27.94      100.00
+-----------------------------+-----------------------------------
+                       Total |     14,614      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab agegrp, nol
+
+  Age group |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      1,532       10.48       10.48
+          2 |      2,786       19.06       29.55
+          3 |      3,175       21.73       51.27
+          4 |      3,038       20.79       72.06
+          5 |      4,083       27.94      100.00
+------------+-----------------------------------
+      Total |     14,614      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. * Sex
+. tab sex, mis
+
+        SEX |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      6,841       46.81       46.81
+          2 |      7,773       53.19      100.00
+------------+-----------------------------------
+      Total |     14,614      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab LMAM_01, mis
+variable LMAM_01 not found
+r(111);
+
+end of do-file
+
+r(111);
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab lmam_01, mis
+
+    LMAM_01 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      9,903       67.76       67.76
+          2 |      4,700       32.16       99.92
+          7 |          5        0.03       99.96
+          8 |          6        0.04      100.00
+------------+-----------------------------------
+      Total |     14,614      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. drop if lmam_01 == 7 | lmam_01 == 8
+(11 observations deleted)
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab lmam_01
+
+    LMAM_01 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      9,903       67.81       67.81
+          2 |      4,700       32.19      100.00
+------------+-----------------------------------
+      Total |     14,603      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab ehg3_01b, mis
+
+   EHG3_01B |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      1,503       10.29       10.29
+          2 |      3,399       23.28       33.57
+          3 |      1,089        7.46       41.03
+          4 |      3,565       24.41       65.44
+          5 |        472        3.23       68.67
+          6 |      3,002       20.56       89.23
+          7 |      1,383        9.47       98.70
+         97 |         28        0.19       98.89
+         98 |         21        0.14       99.03
+         99 |        141        0.97      100.00
+------------+-----------------------------------
+      Total |     14,603      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. drop if ehg3_01b == 97 | ehg3_01b == 98 | ehg3_01b == 99
+(190 observations deleted)
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab ehg3_01b
+
+   EHG3_01B |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      1,503       10.43       10.43
+          2 |      3,399       23.58       34.01
+          3 |      1,089        7.56       41.57
+          4 |      3,565       24.73       66.30
+          5 |        472        3.27       69.58
+          6 |      3,002       20.83       90.40
+          7 |      1,383        9.60      100.00
+------------+-----------------------------------
+      Total |     14,413      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab ttlincg2, mis
+
+   TTLINCG2 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      4,385       30.42       30.42
+          2 |      4,042       28.04       58.47
+          3 |      2,907       20.17       78.64
+          4 |      1,685       11.69       90.33
+          5 |        696        4.83       95.16
+          6 |        698        4.84      100.00
+------------+-----------------------------------
+      Total |     14,413      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab srh2_110, marstat2, agegrp, sex, lmam_01, ehg3_01b, ttlincg2
+invalid 'agegrp' 
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. **** Univariate Analysis: Summary/Descriptive Statistics ****
+. *****************************
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab srh2_110 marstat2 agegrp sex lmam_01 ehg3_01b ttlincg2
+too many variables specified
+r(103);
+
+end of do-file
+
+r(103);
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. table (srh2_110 marstat2 agegrp sex lmam_01 ehg3_01b ttlincg2)
+too many variables specified
+r(103);
+
+end of do-file
+
+r(103);
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. table (srh2_110 marstat2 agegrp), statistic(frequency)
+option statistic() not allowed
+r(198);
+
+end of do-file
+
+r(198);
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. tab1 srh2_110 marstat2 agegrp sex lmam_01 ehg3_01b ttlincg2
+
+-> tabulation of srh2_110  
+
+ Self-rated |
+     health |
+    cleaned |      Freq.     Percent        Cum.
+------------+-----------------------------------
+  Excellent |      3,458       23.99       23.99
+  Very good |      5,213       36.17       60.16
+       Good |      4,162       28.88       89.04
+   Not Good |      1,580       10.96      100.00
+------------+-----------------------------------
+      Total |     14,413      100.00
+
+-> tabulation of marstat2  
+
+       Marital status |
+              cleaned |      Freq.     Percent        Cum.
+----------------------+-----------------------------------
+            Partnered |      8,402       58.29       58.29
+Single, never married |      4,218       29.27       87.56
+                Other |      1,793       12.44      100.00
+----------------------+-----------------------------------
+                Total |     14,413      100.00
+
+-> tabulation of agegrp  
+
+                   Age group |      Freq.     Percent        Cum.
+-----------------------------+-----------------------------------
+               15-24 (Youth) |      1,504       10.44       10.44
+        25-34 (Young adults) |      2,746       19.05       29.49
+   35-44 (Middle-aged adults |      3,123       21.67       51.16
+        45-54 (Senior adults |      3,001       20.82       71.98
+55-64 (Pre-retirement adults |      4,039       28.02      100.00
+-----------------------------+-----------------------------------
+                       Total |     14,413      100.00
+
+-> tabulation of sex  
+
+        SEX |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      6,745       46.80       46.80
+          2 |      7,668       53.20      100.00
+------------+-----------------------------------
+      Total |     14,413      100.00
+
+-> tabulation of lmam_01  
+
+    LMAM_01 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      9,777       67.83       67.83
+          2 |      4,636       32.17      100.00
+------------+-----------------------------------
+      Total |     14,413      100.00
+
+-> tabulation of ehg3_01b  
+
+   EHG3_01B |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      1,503       10.43       10.43
+          2 |      3,399       23.58       34.01
+          3 |      1,089        7.56       41.57
+          4 |      3,565       24.73       66.30
+          5 |        472        3.27       69.58
+          6 |      3,002       20.83       90.40
+          7 |      1,383        9.60      100.00
+------------+-----------------------------------
+      Total |     14,413      100.00
+
+-> tabulation of ttlincg2  
+
+   TTLINCG2 |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |      4,385       30.42       30.42
+          2 |      4,042       28.04       58.47
+          3 |      2,907       20.17       78.64
+          4 |      1,685       11.69       90.33
+          5 |        696        4.83       95.16
+          6 |        698        4.84      100.00
+------------+-----------------------------------
+      Total |     14,413      100.00
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. sum srh2_110 marstat2 agegrp sex lmam_01 ehg3_01b ttlincg2
+
+    Variable |        Obs        Mean    Std. Dev.       Min        Max
+-------------+---------------------------------------------------------
+    srh2_110 |     14,413    2.268091    .9462408          1          4
+    marstat2 |     14,413    1.541456    .7050667          1          3
+      agegrp |     14,413    3.369458      1.3419          1          5
+         sex |     14,413     1.53202     .498991          1          2
+     lmam_01 |     14,413    1.321654    .4671272          1          2
+-------------+---------------------------------------------------------
+    ehg3_01b |     14,413    3.877125    1.916256          1          7
+    ttlincg2 |     14,413    2.469854    1.400858          1          6
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. ologit srh2_110 i.marstat2 i.agegrp i.sex i.lmam_01 i.ehg3_01b i.ttlincg2, or
+
+Iteration 0:   log likelihood =  -18900.26  
+Iteration 1:   log likelihood = -18310.726  
+Iteration 2:   log likelihood = -18306.721  
+Iteration 3:   log likelihood = -18306.719  
+Iteration 4:   log likelihood = -18306.719  
+
+Ordered logistic regression                     Number of obs     =     14,413
+                                                LR chi2(19)       =    1187.08
+                                                Prob > chi2       =     0.0000
+Log likelihood = -18306.719                     Pseudo R2         =     0.0314
+
+-----------------------------------------------------------------------------------------------
+                     srh2_110 | Odds Ratio   Std. Err.      z    P>|z|     [95% Conf. Interval]
+------------------------------+----------------------------------------------------------------
+                     marstat2 |
+       Single, never married  |    1.32934   .0529592     7.15   0.000      1.22949    1.437298
+                       Other  |     1.4611   .0718038     7.72   0.000     1.326932    1.608834
+                              |
+                       agegrp |
+        25-34 (Young adults)  |   1.987793   .1334498    10.23   0.000     1.742714    2.267338
+   35-44 (Middle-aged adults  |   2.595429   .1790769    13.82   0.000     2.267142    2.971252
+        45-54 (Senior adults  |   3.267174    .226294    17.09   0.000     2.852434    3.742217
+55-64 (Pre-retirement adults  |   3.203666    .215722    17.29   0.000     2.807571    3.655642
+                              |
+                        2.sex |   .8900179   .0284305    -3.65   0.000     .8360037    .9475219
+                    2.lmam_01 |   1.472625   .0524479    10.87   0.000     1.373335    1.579094
+                              |
+                     ehg3_01b |
+                           2  |   .8279517   .0484925    -3.22   0.001     .7381605    .9286653
+                           3  |   .7745217   .0590118    -3.35   0.001     .6670823    .8992651
+                           4  |   .6966869   .0422789    -5.96   0.000     .6185602    .7846814
+                           5  |   .5749561    .057423    -5.54   0.000     .4727396    .6992739
+                           6  |   .5257211   .0334485   -10.11   0.000     .4640861    .5955418
+                           7  |   .4864691   .0362318    -9.67   0.000      .420396    .5629269
+                              |
+                     ttlincg2 |
+                           2  |   .7660591   .0331681    -6.16   0.000     .7037328    .8339054
+                           3  |   .5964498   .0288288   -10.69   0.000     .5425403    .6557161
+                           4  |   .5591127   .0323131   -10.06   0.000     .4992354    .6261714
+                           5  |    .545623   .0428853    -7.71   0.000     .4677235    .6364967
+                           6  |   .4331473   .0349452   -10.37   0.000     .3697966    .5073508
+------------------------------+----------------------------------------------------------------
+                        /cut1 |  -.8279826   .0755611                     -.9760797   -.6798855
+                        /cut2 |   .8170023   .0754618                         .6691    .9649047
+                        /cut3 |   2.602592   .0789772                      2.447799    2.757384
+-----------------------------------------------------------------------------------------------
+Note: Estimates are transformed only in the first equation.
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. esttab, se
+
+----------------------------
+                      (1)   
+                 srh2_110   
+----------------------------
+srh2_110                    
+1.marstat2              0   
+                      (.)   
+
+2.marstat2          0.285***
+                 (0.0398)   
+
+3.marstat2          0.379***
+                 (0.0491)   
+
+1.agegrp                0   
+                      (.)   
+
+2.agegrp            0.687***
+                 (0.0671)   
+
+3.agegrp            0.954***
+                 (0.0690)   
+
+4.agegrp            1.184***
+                 (0.0693)   
+
+5.agegrp            1.164***
+                 (0.0673)   
+
+1.sex                   0   
+                      (.)   
+
+2.sex              -0.117***
+                 (0.0319)   
+
+1.lmam_01               0   
+                      (.)   
+
+2.lmam_01           0.387***
+                 (0.0356)   
+
+1.ehg3_01b              0   
+                      (.)   
+
+2.ehg3_01b         -0.189** 
+                 (0.0586)   
+
+3.ehg3_01b         -0.256***
+                 (0.0762)   
+
+4.ehg3_01b         -0.361***
+                 (0.0607)   
+
+5.ehg3_01b         -0.553***
+                 (0.0999)   
+
+6.ehg3_01b         -0.643***
+                 (0.0636)   
+
+7.ehg3_01b         -0.721***
+                 (0.0745)   
+
+1.ttlincg2              0   
+                      (.)   
+
+2.ttlincg2         -0.266***
+                 (0.0433)   
+
+3.ttlincg2         -0.517***
+                 (0.0483)   
+
+4.ttlincg2         -0.581***
+                 (0.0578)   
+
+5.ttlincg2         -0.606***
+                 (0.0786)   
+
+6.ttlincg2         -0.837***
+                 (0.0807)   
+----------------------------
+/                           
+cut1               -0.828***
+                 (0.0756)   
+
+cut2                0.817***
+                 (0.0755)   
+
+cut3                2.603***
+                 (0.0790)   
+----------------------------
+N                   14413   
+----------------------------
+Standard errors in parentheses
+* p<0.05, ** p<0.01, *** p<0.001
+
+. 
+end of do-file
+
+. do "C:\Users\oshio\AppData\Local\Temp\STD13948_000000.tmp"
+
+. *Close the log
+. log close
+      name:  <unnamed>
+       log:  C:\Users\oshio\Documents\CAnD3 RRWM 1\Stata Works\RRWM-1-LogFile-Goodnews_Oshiogbele.log
+  log type:  text
+ closed on:   3 Oct 2025, 01:43:11
+------------------------------------------------------------------------------------------------------------------
