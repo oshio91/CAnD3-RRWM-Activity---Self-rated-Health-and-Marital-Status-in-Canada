@@ -2,7 +2,7 @@
 This repository contains the program, codes, and instructions for replicating my analysis of self-rated health as a function of marital status and other sociodemographic characteristics of individuals in Canada. I used the Canadian GSS (General Social Survey), Cycle 31, 2017 family file.
 ## Contents
 - A ".md" file to guide you through the available material and how to replicate the results in this analysis.
-- A ".docx" file for the program containing instructions for replicating the findings.
+- A ".pdf" file for the program. It contains instructions for replicating the findings.
 - A ".do" file for the codes used in the analysis. This file can be viewed using Stata or a ".txt" package like Notepad or Notepad++.
 - A ".log" file for the analytical outputs. This file can be viewed using Stata or a ".txt" package like Notepad or Notepad++.
 ## Data Accessibility Statement
