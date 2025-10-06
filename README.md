@@ -4,7 +4,7 @@ This repository contains the program, codes, and instructions for replicating my
 - A ".md" file to guide you through the available material and how to replicate the results in this analysis.
 - A ".pdf" file for the program. It contains instructions for replicating the findings.
 - A ".do" file for the codes used in the analysis. This file can be viewed using Stata or a ".txt" package like Notepad or Notepad++.
-- Tables 1 to 9 ("9-b" is an optional duplicate), showing Stata outputs for summary statistics, crosstabs with tests of associations, and regression results.
+- Tables 1 to 9 ("9-b" is an optional duplicate); .png files showing Stata outputs for summary statistics, crosstabs with tests of associations, and regression results.
 ## Data Accessibility Statement
 Data (Canadian GSS, c31, 2017 family file) used in this exercise was obtained via a link provided by the research replicability and workflow management (RRWM) course instructor at CAnD3 (Consortium for Analytics and Data-driven Decision-making) at McGill University, Canada. For more information on data access, restriction, and license, CAnD3 fellows are to read the Data section in this link: https://canvas.ubc.ca/courses/181434/pages/rrwm-%7C-data-activity-%7C-skills. Individuals who are not CAnD3 fellows are encouraged to obtain the data through ODESI, a service provided by the Ontario Council of University Libraries (https://search1.odesi.ca/#/Links to an external site) or by contacting Statistics Canada.
 ### Data citation
